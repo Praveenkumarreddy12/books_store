@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from .forms import CustomerForm, Books_orderedForm, Books_availableForm
 from .models import Customer, Books_available, Books_ordered
 from django.contrib import messages
+
+
 # Create your views here.
-
-
 def home(request):
     books = Books_available.objects.all()
     userid = request.GET.get('id')
