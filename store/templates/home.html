@@ -58,6 +58,7 @@
             border-radius: 5px;
             border: 3px solid rgb(21, 12, 12);
             background-color: #007bff;
+            padding: 10px;
         }
         #cart {
             display: none;
@@ -85,6 +86,35 @@
             flex-wrap: wrap;
             gap: 20px;
         }
+        .add-to-cart {
+        background-color: #ffcc00;
+        color: #000;
+        padding: 10px 15px;
+        font-weight: bold;
+        border: 2px solid #cc9900;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            background-color: #ffaa00;
+            transform: scale(1.05);
+        }
+        .courtcontainer {
+        cursor: pointer;
+        padding: 6px 12px;
+        background-color: #f0f0f0;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+        }
+
+        .courtcontainer:hover {
+            background-color: #e0e0e0;
+        }
+
+
     </style>
 </head>
 <body>
@@ -139,9 +169,10 @@
         <p>ID: {{ i.book_id }}</p>
         <p>Price: ₹{{ i.price }}</p>
         <p>Stock: {{ i.stock }}</p>
-        <button onclick="addToCart('{{ i.book_id }}', '{{ i.name }}', {{ i.price }}, {{ i.stock }})" style="background-color: rgba(228, 232, 20, 0.549);">
+        <button class="add-to-cart" onclick="addToCart('{{ i.book_id }}', '{{ i.name }}', {{ i.price }}, {{ i.stock }})">
             Add to Cart
         </button>
+        
     </div>
     {% endfor %}
 </div>
@@ -151,7 +182,7 @@
 
 <div class="orderscontainer">
     {% for item in order_details %}
-  <div style="border-radius: 10px; border: 1px solid black;margin: 20px;">
+  <div style="border-radius: 10px; border: 1px solid black;margin: 20px; padding: 10px;">
 
     {% if item.image %}
       <img src="{{ item.image }}" width="100">
