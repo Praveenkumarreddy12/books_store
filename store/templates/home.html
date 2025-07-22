@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        nav {
+        background-color: #f8f8f8;
+        padding: 10px 20px;
+        border-bottom: 1px solid #ddd;
+        }
+
+        .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+
+        .left-section p {
+        margin: 0;
+        font-weight: bold;
+        }
+
+        .right-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        }
+        .nav-button {
+        padding: 5px 10px;
+        text-decoration: none;
+        background-color: #007bff;
+        color: rgb(155, 227, 238);
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.2s;
+        }
+
+        .nav-button:hover {
+        background-color: #0056b3;
+        }
+        .maincontent {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            border-radius: 10px;
+            border: 6px solid rgb(21, 12, 12);
+            margin: 20px;
+            background-color: rgb(160, 234, 234);
+        }
+        .images {
+            width: 400px;
+            height: 400px;
+        }
+        .subcontent{
+            border-radius: 5px;
+            border: 3px solid rgb(21, 12, 12);
+            background-color: #007bff;
+        }
+        #cart {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border-radius: 8px;
+        }
+        #cart-items li {
+            margin-bottom: 8px;
+        }
+        button {
+            margin: 0 4px;
+        }
+        .orderscontainer{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #3e2f1c; color: #f9f6f1; padding: 20px; text-align: center; font-family: 'Georgia', serif;">
+        <h1 style="margin: 0;">The Old Scriptorium</h1>
+        <p style="font-size: 16px; margin-top: 5px;">Ancient Wisdom in Every Page</p>
+      </header>
+      
+
+    <nav>
+        <div class="nav-container">
+          <div class="left-section">
+            <p id="username">Welcome, Guest</p>
+          </div>
+      
+          <div class="right-section">
+            <div class="courtcontainer" onclick="toggleCart()">
+              🛒 Cart (<span id="cart-count">0</span>)
+            </div>
+      
+            <a href="/signup/" class="nav-button">Sign Up</a>
+            <a href="/signin/" class="nav-button">Sign In</a>
+          </div>
+        </div>
+      </nav>
+      
+
+<div id="cart">
+    <h3>Your Cart</h3>
+    <ul id="cart-items"></ul>
+    <button id="purchase-btn" disabled>Purchase</button>
+    <p id="info"></p>
+</div>
+<h3 style="
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: #3e2c1c;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+">
+  Explore the Ancient Collection
+</h3>
+
+
+<div class="maincontent">
+    {% for i in books %}
+    <div class="subcontent">
+        <img src="{{ i.image.url }}" alt="{{ i.name }}" class="images">
+        <p>{{ i.name }}</p>
+        <p>ID: {{ i.book_id }}</p>
+        <p>Price: ₹{{ i.price }}</p>
+        <p>Stock: {{ i.stock }}</p>
+        <button onclick="addToCart('{{ i.book_id }}', '{{ i.name }}', {{ i.price }}, {{ i.stock }})" style="background-color: rgba(228, 232, 20, 0.549);">
+            Add to Cart
+        </button>
+    </div>
+    {% endfor %}
+</div>
+
+
+<h3>Ordered Items :</h3>
+
+<div class="orderscontainer">
+    {% for item in order_details %}
+  <div style="border-radius: 10px; border: 1px solid black;margin: 20px;">
+
+    {% if item.image %}
+      <img src="{{ item.image }}" width="100">
+    {% else %}
+      <p>No image available</p>
+    {% endif %}
+    <p>Ordered: {{ item.order.name }} - ₹{{ item.order.price }}</p>
+    <p>Ordered Date :- {{item.order.created_at}} </p>
+    <p>delivered Date :- {{item.order.delivered_at}} </p>
+</div>
+{% endfor %}
+
+</div>
+
+
+
+<script>
+
+    const params = new URLSearchParams(window.location.search);
+    const user = params.get('user');
+    const userId = params.get('id');
+    document.getElementById('username').innerHTML = user;
+
+    const purchaseBtn = document.getElementById('purchase-btn');
+    if (user) {
+    purchaseBtn.disabled = false;
+    purchaseBtn.style.backgroundColor = '#28a745'; // Green or any active color
+    purchaseBtn.style.cursor = 'pointer';
+    } else {
+    purchaseBtn.disabled = true;
+    purchaseBtn.style.backgroundColor = '#ccc'; // Gray
+    purchaseBtn.style.cursor = 'not-allowed';
+    document.getElementById('info').innerHTML = 'Please login to purchase';
+    }
+
+   
+
+    const cart = [];
+
+    function addToCart(id, name, price, stock) {
+        const existing = cart.find(item => item.id === id);
+        if (existing) {
+            if (existing.qty < stock) {
+                existing.qty += 1;
+            }
+        } else {
+            cart.push({ book_id: id, name, price:price, qty: 1, stock });
+
+        }
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartItems = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        cartItems.innerHTML = '';
+
+        let totalSum = 0;
+
+        cart.forEach((item, index) => {
+            const li = document.createElement('li');
+
+            const name = document.createElement('span');
+            name.textContent = `${item.name} `;
+
+            const decBtn = document.createElement('button');
+            decBtn.textContent = '−';
+            decBtn.onclick = () => {
+                if (item.qty > 1) {
+                    item.qty--;
+                } else {
+                    cart.splice(index, 1);  
+                }
+                updateCartUI();
+            };
+
+            const qty = document.createElement('span');
+            qty.textContent = ` ${item.qty} `;
+
+            const incBtn = document.createElement('button');
+            incBtn.textContent = '+';
+            incBtn.onclick = () => {
+                if (item.qty < item.stock) {
+                    item.qty++;
+                    updateCartUI();
+                }
+            };
+
+            const lineTotal = item.price * item.qty;
+            totalSum += lineTotal;
+
+            const totalSpan = document.createElement('span');
+            totalSpan.textContent = ` = ₹${lineTotal}`;
+
+            li.appendChild(name);
+            li.appendChild(decBtn);
+            li.appendChild(qty);
+            li.appendChild(incBtn);
+            li.appendChild(totalSpan);
+
+            cartItems.appendChild(li);
+        });
+
+        cartCount.textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+
+        const totalLi = document.createElement('li');
+        totalLi.style.marginTop = '10px';
+        totalLi.style.fontWeight = 'bold';
+        totalLi.textContent = `Total: ₹${totalSum}`;
+        cartItems.appendChild(totalLi);
+    }
+
+    function toggleCart() {
+        const cartDiv = document.getElementById('cart');
+        cartDiv.style.display = cartDiv.style.display === 'none' ? 'block' : 'none';
+    }
+
+    purchaseBtn.addEventListener("click", function () {
+        console.log("button clicked")
+    fetch("/place-order/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            items: cart
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("info").innerText = data.message;
+    })
+    .catch(error => {
+        console.error("Error placing order:", error);
+    });
+});
+</script>
+
+<footer style="background-color: #3e2f1c; color: #f9f6f1; padding: 15px 20px; text-align: center; font-family: 'Georgia', serif; margin-top: 40px;">
+    <p>&copy; 2025 The Old Scriptorium. All rights reserved.</p>
+    <p style="font-size: 14px;">Follow us on 
+      <a href="#" style="color: #d4c4aa; text-decoration: none;">Instagram</a>, 
+      <a href="#" style="color: #d4c4aa; text-decoration: none;">Facebook</a>, 
+      <a href="#" style="color: #d4c4aa; text-decoration: none;">Twitter</a>
+    </p>
+  </footer>
+  
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    
+        form {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+    
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .container label {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+    
+        .container input,
+        .container select,
+        .container textarea {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #fdfdfd;
+        }
+    
+        button[type="submit"] {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="container">
+            {{ form.as_p }}
+        </div>
+        <button type="submit">submit</button>
+    </form>
+</body>
+</html>
